@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Assignment 3</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="../assets/img/favicon.png" rel="icon">
+  <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="../assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="../assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="../assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="../assets/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+  <script src="../assets/js/header.js"></script>
+  <script type="module" src="https://md-block.verou.me/md-block.js"></script>
+  <!--   ======= Mobile nav toggle button ======= -->
+  <i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
+
+  <!-- ======= Header ======= -->
+  <header-component image_src="../assets/img/profile-img.jpg"></header-component>
+  <main id="main">
+
+    <!-- ======= Breadcrumbs ======= -->
+    <section class="breadcrumbs">
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Assignment 3</h2>
+          <ol>
+            <li><a href="../index.html">Home</a></li>
+            <li>Assignment 3</li>
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- End Breadcrumbs -->
+    
+    <section class="inner-page">
+      <div class="container" >
+        <ul>
+          <li><a href="#Q1">First Question</a></li>
+          <li><a href="#Q2">Second Question</a></li>
+          <li><a href="#Q3">Third Question</a></li>
+          <li><a href="#Q4">Fourth Question</a></li>
+          <li><a href="#Q5">Fifth Question</a></li>
+        </ul>
+       <h2> Click on each question to open the collapsible div :)</h2>
+        <button type="button" class="collapsible" id="Q1">Question 1</button>
+        <div class="collapse">
+          <md-block class="markdown">
+          Create a CloudFront distribution for your website and explain each step with great technical detail.
+          =====
+          ********
+          
+          First of all, it is needed to understand what CloudFront is, both as technology and as a service to be able to interact with 
+          it in a proper manner. According to <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html">AWS</a>
+          Cloudfront is basically a CDN, allowing to deliver the web content and files related to it using a worldwide network of data centers called edge locations.
+
+          This requires to properly define what a CDN is and how it works. A CDN stands for _content delivery network_, which is basically a newtwork os servers whose geographical distribution is as dispersed
+          as possible to enable a faster and safer web performance; this with the creation of copies (often called replication) of the web content closer to the users.
+          In this sense, when someone from the other side of the world, lets say India, tries to fetch a website from the US, his request does not phisically travels all the way to the US, instead, if the website is configured to be in a CDN, 
+          the CDN retrieves the closest copy of the website, allowing to facilitate the delivery of content by reducing the latency as well as the traffic and possible overflow of a single server or location handling all the requests.
+          
+          Each of these CDN servers are what Cloudfront previously defined as Edge Locations, in the sense that they are at the edge of the interaction between the content and the user. This has another set of advantages besides latency, incluiding 
+          the fact that a company hands off the resposability of managing the server infrastructure to a thrid party organizatio, which saves costs, as well as being able to implement load balancing into the edge locations network
+          to prevent a single of these from getting all the load and distributing it accross the other ends, handling better the traffic in case of a spike.
+          
+          Now, Cloudfront works by means of a concept known as Distributions, these are basically an isntance of the CloudFront class, meaning that they provide the capability to properly distribute the content associated with each of them through
+          the Cloudfront's CDN network. In order to create a Distribution through the CLI we write the following:
+          ```shell
+            aws cloudfront create-distribution --origin-domain-name kaladin.cetystijuana.com.com.s3-website-us-east-1.amazonaws.com --default-root index.html
+          ```
+          Here we are saying the following:
+          - **cloudfront**: We're using the cloudfront command to indicate aws that we'll be using one of its services
+          - **create-distribution**: This is the command to indicate we're attempting to create a new distribution which will have the following properties
+            - **- -origin-domain-name**: The name of the origin of the content that shall be distributed across the different edge locations. Cloudfront allows different types of origins, but the one we're passing is the proper reference to the S3 bucket
+                                        where this website is being hosted.
+            - **- -default-root**: This is the object that will automatically fetched by the users when they access the endpoint/URL of our distribution, in this case, such object is the index.html that serves as the main page for the static website
+          It could have also been passed a JSON file that contained the same information given by Cloudfront as output in the DistributionConfig section. This output is a JSON object which contains the following information
+            ```shell
+              {
+                "ETag": "EYHIHLNUOROLP",
+                "Distribution": {
+                    "Id": "E1ZEEC3PVGQYC3",
+                    "ARN": "arn:aws:cloudfront::292274580527:distribution/E1ZEEC3PVGQYC3",
+                    "Status": "Deployed",
+                    "LastModifiedTime": "2023-02-11T21:56:16.720000+00:00",
+                    "InProgressInvalidationBatches": 0,
+                    "DomainName": "d24rte091kklke.cloudfront.net",
+                    "ActiveTrustedSigners": {
+                        "Enabled": false,
+                        "Quantity": 0
+                    },
+                    "ActiveTrustedKeyGroups": {
+                        "Enabled": false,
+                        "Quantity": 0
+                    },
+          
+            ```
+          This first section of the JSON gives us the following information
+          - **ETag**: A string which serves a key to reference the current version of the distribution. This is practical when there's several versions around the different
+          edge locations due to Cloudfront's eventual consistency, where at some point an edge location will be asked to update its data and it can know which version to update by matching this ETag
+          - **Id**: The unique identifier for the newly created distribution, which references it independent of the state of its configuration or version.
+          - **ARN**: Is the Amazon Resource Name, which includes the ID for the AWS account (292274580527) and the Id for the distribution.
+          - **Status**: The current status of the distributio's propagation over the CDN, once it is fully propagated, it is said to be Deployed
+          - **DomainName**: References the domain assigned to this distribution, whcih can be used to access the reference default element specified when creating the distribution.
+          
+          The second section has the actual configuration data for the distribution:
+            ```shell
+              "DistributionConfig": {
+                "CallerReference": "cli-1676152571-283290",
+                "Aliases": {
+                    "Quantity": 0
+                },
+                "DefaultRootObject": "index.html",
+                "Origins": {
+                    "Quantity": 1,
+                    "Items": [
+                        {
+                            "Id": "kaladin-zwolf.com.s3-website-us-east-1.amazonaws.com-1676152571-930311",
+                            "DomainName": "kaladin-zwolf.com.s3-website-us-east-1.amazonaws.com",
+                            "OriginPath": "",
+                            "CustomHeaders": {
+                                "Quantity": 0
+                            },
+                            "CustomOriginConfig": {
+                                "HTTPPort": 80,
+                                "HTTPSPort": 443,
+                                "OriginProtocolPolicy": "http-only",
+                                "OriginSslProtocols": {
+                                    "Quantity": 3,
+                                    "Items": [
+                                        "TLSv1",
+                                        "TLSv1.1",
+                                        "TLSv1.2"
+                                    ]
+                                },
+                                "OriginReadTimeout": 30,
+                                "OriginKeepaliveTimeout": 5
+                            },
+                            "ConnectionAttempts": 3,
+                            "ConnectionTimeout": 10,
+                            "OriginShield": {
+                                "Enabled": false
+                            },
+                            "OriginAccessControlId": ""
+                        }
+                    ]
+                },
+                "OriginGroups": {
+                    "Quantity": 0
+                },
+            ```
+          The most relevant values refer to the following:
+          - **CallerReference**: Is an identifier that allows Cloudfront to prevent two distributions to be created with the same identifier independent of the distribution's configuration. Therefore, if a new distribution is to be created, it cannot be done
+          by using an already sent CallerReference, 'cause this has been already marked as existent. 
+          - **Aliases**: These allow the distribution to know towards which CNAME records to point to in order to map the distribution's domain name to a custom one. Since for now there's no CNAME for this distribution, it has a Quantity of 0
+          - **DefaultRootObject**: reference the value passed when the distribution was created, allowing to know which object will be retrieved when calling the domain name of the distribution
+          - **Origins** : An object which contains a list of origins from where the distribution will pull the files to be distributed. each of which has the following
+            - **Id**: The unique identifier for the origin in question.
+            - **DomainName**:  The domain name for the origin, in this case, it references the s3 bucket url because its the one that was provided on the creation, but could have also been an EC2 instance, an own web server, etc. 
+            - **CustomHaders**: HTTP headers that could be added to the distribution when serving this origin. I has none for this origin, hence the 0
+            - **CustomOriginConfig**: This is specified for the S3 bucket headers ONLY because it is setup as a static website host, if the bucket wasn't setup in that way, it should be S3OriginConfig.
+              - **HTTPPort** & **HTTPSPort**: Defines the port that Cloudfront will use when connecting to the origin, where origin should be listing for each protocol 
+              - **OriginProtocolPolicy**: Is used to establish the protocol that Cloudfront will use as default, since we do not have an SSL  certificate so far, it uses _http-only_ 
+              - **OriginSslProtocol**: Were Cloudfront to connect to the origin with HTTPS, it will use the values defined by this attribute, by default it has the three minimum values recommended by AWS with latest TLS protocols that S3 supports
+              - **OriginReadTimeout**: The time in seconds otht CloudFront will wait for a response from the s3 bucket, in this case it will wait 30 seconds before giving a timeout
+              - **OriginKeepaliveTimeout**: The number of seconds that CloudFront will keep the session alive after the last packet of a response has been received, saving time required to re-establish a new connection and the handshakes required for SSL (TLS)
+            - **ConnectionAttempts**:  How many times will CloudFront try to connect to the origin in the case of a timeout. This is also valid when trying to get a response when the bucket is configured as static website.
+            - **ConnectionTimeout**: The number of seconds that CloudFront waits when trying to connect to the origin, different from OriginReadTimeout in the sense that we're trying to connect for the first time, not to get a subsequent response
+            - **OrginShield**: Used to protect the origin (s3 bucket in this case) from the requests initated by the POP (how amazon calls its Cloudfront's edge locations) if the origin's contents are not already cached in each of the POPs. This service palces an intermediary (a shield) which will catch all the origin fetches.
+            - **OriginAccessControlId**: Used if the origin had an access control
+              ```shell
+              "DefaultCacheBehavior": {
+                  "TargetOriginId": "kaladin-zwolf.com.s3-website-us-east-1.amazonaws.com-1676152571-930311",
+                  ...
+                  ,
+                  "ViewerProtocolPolicy": "allow-all",
+                  "AllowedMethods": {
+                      "Quantity": 2,
+                      "Items": [
+                          "HEAD",
+                          "GET"
+                      ],
+                      "CachedMethods": {
+                          "Quantity": 2,
+                          "Items": [
+                              "HEAD",
+                              "GET"
+                          ]
+                      }
+                  },
+                  ...
+                  "MinTTL": 0,
+                  "DefaultTTL": 86400,
+                  "MaxTTL": 31536000
+              },
+              ```
+            The next section describes the cache behavior for the distribution 
+            - **TargetOriginId**: The Id of the origin to be cached in the distributions
+            - **ViewerProtocolPolicy**: Restricts the protocol that a user can use to access the files from the origin. It can be either allow-all (HTTP & HTTPS), redirect-to-https (raises a 301 code and the HTTPS url for a new fetch) or https-only (denies HTTP requests)
+            - **AllowedMethods**: The HTTP methods that CloudFront can process and forward to the origin. You can have aither GET and HEAD requests, GET, HEAD and OPTIONS requests, or all (GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE) with the 
+            inconvencince of having to restrict access to the origin so users can't perform some of these operations.
+            - **MinTTL** , **DefaultTTL** & **MaxTTL**: Times specified for an object to stay in cache before forwarding anothe request to the origin.
+            - The rest of the attributes are not relevant for the bucket since they're either false or empty
+            ```shell
+
+              "Enabled": true,
+              "ViewerCertificate": {
+                  "CloudFrontDefaultCertificate": true,
+                  "SSLSupportMethod": "vip",
+                  "MinimumProtocolVersion": "TLSv1",
+                  "CertificateSource": "cloudfront"
+              },
+              
+            ```
+            Next are the following attributes:
+            - **Enabled**: Functions as a toggle, enabling or disabling the distribution
+            - **ViewerCertificate**: Defines the SSL/TLS configuration, this will be further explained in the next question
+
+            In case the distribution is not deployed yet, we can enter the following commands to check the state:
+            ```shell
+              aws cloudfront list-distributions
+              aws cloudfront get-distribution --id E1ZEEC3PVGQYC3
+            ```
+            The first one lists all the distributions, and we would have to find ours and see the state, whilst the latter allows us to get only the one we want by passing its id
+            
+            If the state has changed to deployed we can get the Distribution's domain name, paste it into the browser and see the index.html rendered.
+          </md-block>
+        </div>
+        <button type="button" class="collapsible" id="Q2">Question 2</button>
+        <div class="collapse">
+          <md-block class="markdown">
+            Update your DNS Record to route to the CloudFront end point and explain each step with great technical detail
+            =====
+            ********
+            
+            Updating the record
+            -----
+
+            The primary reason behind the idea of changing the CNAME record to point toward the CloudFront distribution instead of directly to the S3 bucket is the fact
+            that while with both we're able to fetch the website, with S3we are calling directly to the bucket, located in the _ue-east-1_ region, therefore, any request that tries to 
+            access the website, is physically sending a request towards that region.
+
+            With CloudFront, instead of routing suhc request towards the host regios, the CDN service will route it toward the closest POP to the user, allowing it to hav a quicker response and be able to handle much more traffic.
+            
+            In order to update the DNS record, the only thing needed was to modify the previously submitted CNAME record with the following:
+            ```shell
+              {
+                "Comment": "Update record to add CloudFront domain name to the CNAME record",
+                  "Changes": [
+                    {
+                      "Action": "UPSERT",
+                      "ResourceRecordSet": {
+                        "Name": "kaladin.cetystijuana.com",
+                        "Type": "CNAME",
+                        "TTL": 3,
+                        "ResourceRecords": [
+                          {
+                            "Value": "d24rte091kklke.cloudfront.net"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+              }
+            ```
+            What we're doing is sending almost the same JSON, with the following changes:
+            - **Action**: Since the record for _kaladin.cetystijuana.com_ already exists, we are updating such record, therefore the required
+            action is an UPSERT (update and insert) the record with the new data
+            - **TTL**: Decreased to 3 to have cache expire in 3 seconds and not wait a long time if something fails
+            - **Value**: The resource record is no more the s3 bucket url, instead we're pointing towards the CloudFront distribution's url, which in turn will return a cached version of the website stored in the bucket 
+              
+            To get this updated CNAME record into Route53, we need to know the Hosted zone that is serving the record, for this, we can input the following:
+            ```shell
+              aws route53 list-hosted-zones
+            ```
+            Which will return a list of the hosted zones created for the current account; since the website is under the cetystijuana domain, we take the id for that hosted zone
+            ```shell    
+              {
+                "HostedZones": [
+                    {
+                      "Id": "/hostedzone/Z03346142C3RKH191036Y",
+                      "Name": "cetystijuana.com.",
+                      "CallerReference": "RISWorkflow-RD:fc4e3528-b645-4b45-8c60-ea43b3e4363f",
+                      "Config": {
+                          "Comment": "HostedZone created by Route53 Registrar",
+                          "PrivateZone": false
+                      },
+                      "ResourceRecordSetCount": 22
+                    }
+                ]
+              }
+            ```
+            Now, we just do the following:
+            ```shell
+            aws route53 change-resource-record-sets --hosted-zone-id Z03346142C3RKH191036Y --change-batch file://sub.json
+            aws route53 list-resource-record-sets --hosted-zone-id Z03346142C3RKH191036Y
+            ```
+            Here, we are telling Route53 to change the record in the hosted-zone Z03346142C3RKH191036Y with the characteristics described in the file sub.json
+            , returning a JSON wich says that the operation is pending because it has to be propagated to the different DNS servers in the us-east-region (which serves the website), to verify it has finished and everything was done correctly, the second line lists all the records inside the specified hosted zone, we just need
+            to look for ours and verify it is correctly configured
+
+            After doing this, ideally we would be able to search for kaladin.cetystijuana.com in the browser and see the page, however, CloudFront returned a 403 error  
+            because it is not setup to accept requests from such domain name (it does not know it is a proper alias for its distribution), for this we will need
+            to do two things, the first one is to add the alias to the distribution configuration for it to know it has to accept requests for that domain, and also, 
+            we need to acquire an SSL/TLS certificate for the domain in order to acreditate it is reliable and under our control.
+
+            Acquire an SSL/TLS certificate
+            -----
+            An SSL/TLS certificate is basically a file that serves as a reference to authenticate the identity and reliabilty of a website. These certificates are issued by Certificate Authorities, which are
+            trusted parties that validate the authenticity of the certificate,
+            
+            When adding a certificate to a website, this becomes available for HTTPS protocol, meaning that it is now under the secure HTTP protocol (this also changes the port used from 80 (HTTP) to 443 (HTTPS)). There are two main types of certificates
+            - SSL: Secure Socket Layer, which is currently deprecated but the term is still used, used MD5 and SHA1 encryption
+            - TLS: The replacement for SSL, it has several versions, but they share the upgraded encryption algorithms for data integrity (like HMAC and AEAD)
+
+            The HOW in the use of a certificate can be described as follows (taken from <a href="https://www.baeldung.com/cs/ssl-vs-tls">here</a>)
+            - The first step when connecting to a website with TLS, a client sends a hello message to the server along with its supported TLS protocol versions and a random number
+            - The server then responds by sending a hello with a chosen protocol version, a server random number and its digital certificate
+            - Client verifies the certifictae and shares a random premaster secret key encrypted with the public key shared by the server
+            - Server then decrypts the premaster secret key with its own private key. Both client and server generate a shared secret key for the session with the premaster secret key
+            - Client then sends an authenticated message to the server using HMAC
+            - Server attemots to decrypt and authenticate the message, if it cannot do so, the handshake (process of authenticating and establishing a session) fails. Else the server starts to answer client requests
+            - After that, the Client just has to authenticate and decrypt the message, finishing the handshake, after which both client and server can communicate using their shared secret key
+
+            Fortunately, AWS has its own Certificate Authority, knwon as ACM (Amazon Certificate Authority). To request a new certificate for the domain, all we have to do is the following:
+            
+            ```shell
+              aws acm request-certificate --domain-name kaladin.cetystijuana.com --validation-method DNS --subject-alternative-names *.cetystijuana.com
+            ```
+            Here we are doing the following:
+            - **acm**: We are using the acm services
+            - **request-certificate**: We are asking ACM to issue a certificate for our domain
+              - **- -domain-name**: We pass the domain name we want the certifcate to be issued for
+              - **- -validation=method**: The way we're going to authenticate the ownership of the domain, it can be either DNS (you add the CNAME) or through email
+              - **- -subject-alternative-names**: We can add aditional domain names to the main one, mostly used with wildcards (*) to protect subdomain, and changing the top level domain (varying .com to .net for example)
+
+            After this. we get the ARN for the certificate as output, and we might think that we can start using it, however, although the certificate has been requested, we need to 
+            validate that the domain requested is actually ours. Since we used DNS as the validation method, ACM provides a CNAME that needs to be added to the DNS provider (Route53 in this case)
+            that serve as a proof of the control and ownership of the domain. To get this CNAME, we need to send the following command:
+            ```shell
+              aws acm describe-certificate --certificate-arn arn:aws:acm:us-east-1:292274580527:certificate/185117be-765c-4f6d-bb7f-e4b6ef6a3bc7
+            ```
+            
+            This returns a JSON object like the following
+
+            ```shell
+              {
+                "Certificate": {
+                    "CertificateArn": "arn:aws:acm:us-east-1:292274580527:certificate/185117be-765c-4f6d-bb7f-e4b6ef6a3bc7",
+                    "DomainName": "kaladin-zwolf.com",
+                    "SubjectAlternativeNames": [
+                        "*.kaladin-zwolf.com"
+                    ],
+                    "DomainValidationOptions": [
+                        {
+                            "DomainName": "kaladin-zwolf.com",
+                            "ValidationDomain": "kaladin-zwolf.com",
+                            "ValidationStatus": "PENDING_VALIDATION",
+                            "ResourceRecord": {
+                                "Name": "_6e6359fd6ea472e8989f400b53a100e4.kaladin-zwolf.com.",
+                                "Type": "CNAME",
+                                "Value": "_10c689072970e6e247fa9181b9c450a3.kdbplsmznr.acm-validations.aws."
+                            },
+                            "ValidationMethod": "DNS"
+                        }
+                    ],
+                    "Serial": "0e:b3:f1:75:80:5c:71:b0:8d:93:4b:74:37:b5:41:d2",
+                    "Subject": "CN=kaladin-zwolf.com.com",
+                    "Issuer": "Amazon",
+                    "CreatedAt": "2023-02-15T17:38:56.025000-08:00",
+                    "IssuedAt": "2023-02-15T22:31:24.547000-08:00",
+                    "Status": "PENDING_VALIDATION",
+                    "NotBefore": "2023-02-15T16:00:00-08:00",
+                    "NotAfter": "2024-03-15T16:59:59-07:00",
+                    "KeyAlgorithm": "RSA-2048",
+                    "SignatureAlgorithm": "SHA256WITHRSA",
+                    "InUseBy": [],
+                    "Type": "AMAZON_ISSUED",
+                    "KeyUsages": [],
+                    "ExtendedKeyUsages": [],
+                    "RenewalEligibility": "INELIGIBLE",
+                    "Options": {
+                        "CertificateTransparencyLoggingPreference": "ENABLED"
+                    }
+                }
+            }
+            ```
+            
+            Which retrieves the data associated with the certificate, the key features are:
+
+            - **CertificateArn**: The Amazon Resource Name associated with the certificate
+            - **DomainName**: The domain name for which the certificate was issued
+            - **SubjectAlternativeNameSummaries**: Those names covered by the certificate as well, in this case, the wildcard allows to cover all of the subdomains for kaladin-zwolf.com
+            - **DomainValidationOptions**: Shows information about the initial validation of the domain name ownership after requesting the certifictae
+              - **ValidationDomain**: The domain name to validate 
+              - **ValidationStatus**: This shows the state of the certificate, at the beginning it is PENDING_VALIDATION, but can also be SUCCESS or FAILED if the validation was successfully undergone 
+              - **ResourceRecord**: This object contains the CNAME that needs to be used by the requester in order to validate the certificate
+                - **Name**: The name on the DNS record that will map towards the validation value.
+                - **Type**: The type of DNS record, set CNAME by default
+                - **Value**: The proper CNAME value that will allow the validation
+              - **ValidationMethod**: How the validation was set, either by email or DNS
+          
+            Add CNAME for validation
+            -----
+
+            We need to create a CNAME record in Route53, to do so, we create a new json file and write the following
+            ```shell
+              {
+                "Comment": "Update record to add new CNAME record",
+                  "Changes": [
+                    {
+                      "Action": "CREATE",
+                      "ResourceRecordSet": {
+                        "Name": "_6e6359fd6ea472e8989f400b53a100e4.kaladin-zwolf.com",
+                        "Type": "CNAME",
+                        "TTL": 3,
+                        "ResourceRecords": [
+                          {
+                            "Value": "_10c689072970e6e247fa9181b9c450a3.kdbplsmznr.acm-validations.aws"
+                          }
+                       ]
+                     }
+                   }
+                ]
+              }
+
+            ```
+            Here, we are creating a CNAME record like in Assignment 2, but now we are mapping the Name provided by ACM
+            to the validation CNAME that will allow ACM to, after a while change the certificate status to SUCCESS.
+
+            To pass this CNMAE to Route53, we do the following
+            ```shell
+            aws route53 change-resource-record-sets --hosted-zone-id Z0780615INC0IWKRMIAX --change-batch file://cname_dns.json
+            ```
+            Where we are telling Route53 to add the record (CREATE in this case) in the cname_dns.json file to the given hosted zone
+            
+            After this is done, usually you just need to wait around 5 minutes, then, if you repeat the describe certificate
+            command, it will show SUCCESS in the ValidationStatus attribute.
+
+            Add the alias into the distribution
+            -----
+
+            The only remianing thing to do is to add the alias to the distribution created earlier, to do so, we just need to get 
+            the configuration. For this, we can use the following
+            ```shell
+              aws cloudfront get-distribution-config --id E1ZEEC3PVGQYC3 > config.json
+            ```
+            This will return the configuration for the distribution, along with an updated ETag and will save it to the config.json file.
+            Then, we open the file and update the following:
+            ```shell
+              "Aliases": {
+                "Quantity": 1,
+                "Items":[
+                    "kaladin-zwolf.com"
+                ]
+              },
+            ```
+            Here we just add the domain name as an alias so that CloudFront knows that all the requests looking for it are actually searching for the contents
+            in the distribution. Quantity references how many aliases are there, and Items is a list of all the possible aliases that could be used.
+            
+            ```shell
+            "ViewerCertificate": {
+                "CloudFrontDefaultCertificate": false,
+                "ACMCertificateArn":"arn:aws:acm:us-east-1:292274580527:certificate/185117be-765c-4f6d-bb7f-e4b6ef6a3bc7",
+                "SSLSupportMethod": "sni-only",
+                "MinimumProtocolVersion": "TLSv1",
+                "Certificate":"arn:aws:acm:us-east-1:292274580527:certificate/185117be-765c-4f6d-bb7f-e4b6ef6a3bc7",
+                "CertificateSource": "acm"
+            }
+            ```
+            Then, we add the following:
+            - **CloudFrontDefaultCertificate**: This is a boolean attribute which states if we are using the default configuration or not, therefore we write false
+            - **ACMCertificateArn**: The ARN of the certificate requested previously
+            - **SSLSupportMethod**: It was vip, which acce[ted HTTPS connections from everybody, but changed to sni-only, which is an extension of TLS in which the client indicates the hostname it is trying to connect at the begonning of the handshake, just like how we described TLS before.
+            - **MinimumProtocolVersion**: The minimm TLS protocol, which in this case is TLSv1 for sni-only
+            - **CertificateSource**: ACM since it was the AC that issued the certificate
+
+            Then, to update the distribution, we take the ETag at the beggining of config.json and send the following command
+            ```shell
+              aws cloudfront update-distribution --id E1ZEEC3PVGQYC3 --distribution-config file://config.json --if-match EYHIHLNUOROLP
+            ```
+            Where
+            - **update-distribution**: Allows us to send changes to the distribution configuration
+            - **- -id**: Defines the Distribution id
+            - **- -distribution-config**: References the changes we have done, in this case we are passing the config.json we edited earlier
+            - **- -if-match**: The versioning option that allows us to tell CloudFront which version of the distribution we are attempting to change
+          
+            After all of this, if the latter command is successfull, we now should be able to access the domain name using https, but this time accesing it through CloudFront and not directly to S3
+          </md-block>
+        </div> 
+        
+        <button type="button" class="collapsible" id="Q3">Question 3</button>
+        <div class="collapse">
+          <md-block class="markdown">
+            Explain what it means to minify website resources (html, js, css) and the advantages and disadvantages of this process
+            =====
+            ********
+
+            To minify a website, also known as minification, is the process in which unnecesary pieces of information are removed from the source code of a web application or website.
+            The main idea behind it is the fact that, as more data is needed for a website to be downloaded and processed by the browser, the final user will have to spend more bandwith and time
+            to be able to load that page, therefore, by minifying the page's code, the developer reduces as much as possible 
+            the amount of data that is not necessary for the website to work as intended.
+            
+            When creating a website, developers usually create the code in a human readable way, such that when they look at it they'll be able to 
+            understand what it does and how it does it in a clean and easy way (which is a highly valued skill in the industry and comes handy at the time of debugging), however the minification
+            paradigm states that all of the extra whitespaces, line breaks, comments and tabs create an extra and unnecesary load for website when it s downloaded, therefore
+            the practice of minifying begins by removing all of these comments, tabs, etc., as well as reducing the variable, function and classes names. This allows the browser (who does not need to understand
+            what the code does in the same way as we do) to render and process it faster.
+
+            This process can happen on HTML, JS and CSS files of the website in order to compact it. This minification is said to reduce a file size by up to 60% of its original 
+            size, therefore having a significant increase in the performance of the website when it is transmitted through the network, that's why, according to <a href="https://www.imperva.com/learn/performance/minification/">imperva</a>,
+            it is a major component in the area known as front-end optimization.
+
+            It is important to differentiante minification from another concepts that can be sometimes mixed together, as defined by <a href="https://www.cloudflare.com/en-gb/learning/performance/why-minify-javascript-code/">Cloudflare</a>,
+            minification can sometimes be confused wuith obfuscation, which is the process where companies, in order to hide their business logic modify their code to make it unreadable (much like what minification does) making reverse engineering difficult,
+            this also has an effect on the loading times by changing variable names and comments,even though its main purpose is not to improve performance, but to hide potentially crucial algorthms and processes.
+            Minification is also not the same as compression, because it does not change the number of bits required to store the same information, it deletes information considered unnecesary to save that extra space.
+            
+            Therefore,some of the advantages asociated with minification are:
+            - Faster loading time for users due to less unnecesary data needed to be downloaded while providing the same user experience
+            - Because the amount of data to be transmitted is dramatically reduced, the business saves in bandwidth consumption
+            - And, because less data is being process for each request, resource usage can also have a lower fee overall
+              - This is true even more for JS scripts, because they need less time to be interpreted by the browser
+            
+            But it also comes with its own set of disadvantages, like
+            - Minification tools make debugging hard due to the elimination of the human readable nature of the code
+            - Having two different sets of code in production (minified) and development (normal) can lead to confussion and errors both human and automated
+            - Minification tools can be buggy (at the end of the day, they're written by humans) therefore a minification error can impact negatively the code's original behavior
+            
+            As a conclusion, I can understand the power that minification has to make the metrics and performance of a website efficient, however, it should not be taken as a
+            a magic solution to solve all the performance problems, therefore, it should be implemented along with another performance tools to tackle all the possible angles that could be leading to higher 
+            loading times and processing power required. 
+          </md-block>
+        </div> 
+        <button type="button" class="collapsible" id="Q4">Question 4</button>
+        <div class="collapse">
+          <md-block class="markdown">
+            Write a python script (and explain each step with great technical detail) to 
+            =====
+            ********
+            
+            NOTE: To download the script, click <a href="../scripts/assgnmt3.py">HERE</a>
+
+            In order to communicate to AWS, it is needed to import the boto3 library which we installed on Assignment 1.
+
+            A bit of a disclaimer: I like to define the types of the parameters and return values in my functions, that's why they have the :str, :float, -> list, etc.
+            They do not add any functionality to the code, that's why I don't go into much detail with them.
+
+            ```shell
+              # Import for the libraries and modules to use in the script
+              # boto3 is the library that allows to communicate with AWS, while sys allows to handle command
+              # line arguments from the terminal
+              import boto3
+              import sys
+              
+              
+              class ASSIGNMENT3:
+                  # Didn;t wanted to instantiate the session as a global variable, so created a class from which the methods can call it
+                  def __init__(self):
+                      # This constructor creates a boto3 session, which is just a way to define a connection with AWS, with a set of configuration values. 
+                      # Since I don't have my default profile configured with the key-pair for this class, I pass the profile with this configuration
+                      # in the profile_name paramater
+                      self.session = boto3.Session(profile_name='kaladin12')
+                      # Then, define a client that passes 'dynamodb' as parameter, namely, I'm using the session configuration to create
+                      # a client that will allow me to communictae with dynamodb
+                      self.dynamodbClient = self.session.client('dynamodb')
+            ```
+            
+            Find a record in the Students DynamoDB table by id.
+            -----
+
+            ```shell
+                  def get_item_by_id(
+                          self,
+                          student_id:str, 
+                          ) -> list:
+                      # In order to get an item from the Students database, create this method which receives the student id
+                      # Then define a list of the fields I want the user to see when returning the record searched
+                      fields_to_return:list=['id', 'full_name', 'personal_website']
+                      # Then, checked whether the values provided for the paramaters match the values needed to send to the DB
+                      # student_id has to be of type string
+                      # If any of these asserts fails, an error will be raised and the function will no send the data to the db
+                      # This just allows to catch possible errors before sending the data
+                      assert type(student_id) == str
+                      # Then, we call the get_item method for the dynamo client, it receives the name of the Table, which is
+                      # Students, as well as the key to search, which needs to specify the structure of it, namely
+                      # "name":{ "type": value }, where name is the name of the field, type is S for string
+                      # and the value is the id passed by the user that we want to search
+                      # This method also has the option to indicate the AttributesToGet, which
+                      # tells dynamoDB which fields we want to get for the record that matches the query, for it we pass
+                      # the fields_to_return list
+                      res = self.dynamodbClient.get_item(
+                          TableName = 'Students',
+                          Key =  {
+                              "id": {
+                                  "S":student_id,
+                              }
+                          },
+                          AttributesToGet=fields_to_return
+                      )
+                      # The query return its value into the res variable
+                      # Next, we need to handle the response, if the code is not a 200 (successfull) or the Item attribute
+                      # is empty (it can happen that the query is successfull but no item was found), we raise a KeyError
+                      # which indicates the value provided was not found
+                      # The response has the attribute ResponseMetadata, which in turns has the HTTPStatusCode value
+                      # for the request sent by the client
+                      if res['ResponseMetadata']['HTTPStatusCode'] != 200 or 'Item' not in res:
+                          raise KeyError(student_id)
+                      # else, we return the value by passing the content in the Item attribute of the response json
+                      return res['Item']
+              ```
+                
+            Create or update a record in the Students DynamoDB table based on the id
+            -----
+
+              ```shell
+                  def create_or_update(
+                          self,
+                          student_data:str
+                          ) -> str:
+                      # To create or update a record in the database, we receive the student_data parameter
+                      # which has to be a str since its a JSON object taken from the terminal (as string)
+                      # Then import the json module to convert strs to objects easily
+                      # I import it here because I don't need it in the other methods, and don't want to have it in memory
+                      # if isn't used
+                      import json
+                      # Then, try to convert the string into a proper JSON object by converting it with the json module
+                      # if isn't successful (wrong json format passed ) a type error will be raised to inform the user 
+                      # its mistake
+                      try:
+                          student_data = json.loads(student_data)
+                      except:
+                          raise TypeError('Wrong Format!!!')
+              
+                      # Then, after the json object exists, just check whether it has the appropiate attributes to send 
+                      # to the database, namely id, full_name and personal_website
+                      assert 'id' in student_data
+                      assert 'full_name' in student_data
+                      assert 'personal_website' in student_data
+                      # If all the fields are in the object, call the put_item method from the dynamodb client
+                      # which allows to create or update a record with the same parameters
+                      # It receives the table name as well as the Item parameter, which is an object
+                      # that asks to define the structure of the fields in the databse and the values to be sent
+                      # for this, just define the following:
+                      # "name":{ "type": value }, where name is the name of the field, type is S for string
+                      # and the value is parameter passed by the user, namely full_name, id and personal_website
+                      res = self.dynamodbClient.put_item(
+                          TableName = 'Students',
+                          Item={
+                              "full_name":{
+                                  "S":student_data['full_name']
+                              },
+                              "id": {
+                                  "S":student_data['id']
+                              },
+                              "personal_website":{
+                                  "S":student_data['personal_website']
+                              }
+                          }
+                      )
+                      # This gives us a response, if its status code is not successfull (200)
+                      # then raise a key error and tell the user it did not work
+                      if res['ResponseMetadata']['HTTPStatusCode'] != 200:
+                          raise KeyError("DIDN'T WORKED")
+                      # else, tell the user its action was successful
+                      return 'SUCCESS'
+              ```
+
+            Delete a record in the Students DynamoDB table based on the id
+            -----
+
+              ```shell
+                  def delete_item_by_id(
+                          self, 
+                          student_id:str
+                          ) -> str:
+                      # To delete an item, receive a student id as a parameter in order to be able to 
+                      # look for a record based on this value
+                      # then, assert whether it has the proper type
+                      assert type(student_id) == str
+                      # After asserting this, call the delete_item method of the dynamodb client
+                      # passing the table anme, as well as the key to search for
+                      # which defines the field name, its type and the value to look for, which is the
+                      # student id passed by the user
+                      res = self.dynamodbClient.delete_item(
+                          TableName = 'Students',
+                          Key =  {
+                              "id": {
+                                  "S":student_id,
+                              }
+                          }
+                      )
+                      # Then check the response if it isn't successfull (200) raise an error
+                      if res['ResponseMetadata']['HTTPStatusCode'] != 200:
+                          raise KeyError(student_id)
+                      # else, tell the user it was successful
+                      return 'DELETED'
+              ```
+            The following lines define the behavior for the module when called directly from the terminal
+              ```shell
+              # Used to check whether the module is run directly or as an import in another module
+              if __name__ == '__main__':
+                  # create the instance for the class that contains all the methods
+                  assgn = ASSIGNMENT3()
+                  # Since I decided to test my knwoledge in command line manipulation, defined a series of 
+                  # options to be sent from the terminal by the user in order to call each of the methods
+                  # here I just map each option with the proper reference (the method name with no ())
+                  mappings= {
+                      '--get-item-by-id': assgn.get_item_by_id,
+                      '--create-or-update': assgn.create_or_update,
+                      '--delete-item-by-id': assgn.delete_item_by_id
+                  }
+                  # Then, read the arguments from the command line by using the sys.argv (variable arguments)
+                  # and filtering them by those that start with -- (the method to call) or nor (arguments)
+                  # within a list comprehension
+                  # this has the pitfall of only allowingone argument, but sisnce its for practice, its ok
+                  calls = [arg for arg in sys.argv[1:] if arg.startswith('--')]
+                  args = [arg for arg in sys.argv[1:] if not arg.startswith('--')]
+                  # then, couple the methods and arguments to pass to them with a zip (joins by tuples)
+                  # and pass them to the proper function by calling mappins with the call (the function selected)
+                  # and the argument
+                  for call, arg in zip(calls, args):
+                      print(mappings[call](arg))
+            ```    
+            
+            To illustrate how to use the script, check the following lines:
+            ### To create a new record
+            ```shell
+              python3 assgnmt3.py --create-or-update "{\"id\":\"999\",\"full_name\":\"test\",\"personal_website\":\"www.google.com\"}"
+              # If json format is bad, a TypeError will be raised
+              
+              # This example returns the following:
+              SUCCESS
+            ```
+
+            ### To get a record
+            ```shell
+              python3 assgnmt3.py --get-item-by-id "999" # NOTE that if the id does not exists, a KeyError will be raised
+
+              # This gives the output:
+              {'full_name': {'S': 'Elian Javier Cruz Esquivel'}, 'id': {'S': '032218'}, 'personal_website': {'S': 'kaladin.cetystijuana.com'}}
+            ```
+            
+            ### To delete a record
+            ```shell
+              python3 assgnmt3.py --delete-item-by-id "999" # If id doesn;t exists, a KeyError will be raised
+              
+              # This yields the output:
+              DELETED
+            ```
+
+
+          </md-block>
+        </div> 
+        <button type="button" class="collapsible" id="Q5">Question 5</button>
+        <div class="collapse">
+          <md-block class="markdown">
+            Explain the difference between Growth mindset and Fixed mindset according to Carol Dweck
+            =====
+            ********
+            
+            Taken from assignment 5 for Operating Systems
+          </md-block>
+            <table> 
+              <tr>
+                <th>Fixed Mindset</th>
+                <th>Growth Mindset</th>
+              </tr>
+              <tr>
+                <td>
+                  <md-block class="markdown">
+                    Una mentalidad fija representa esta creencia de las personas que tienen una idea del mundo concebida bajo el hecho de que sus cualidades se encuentran talladas en piedra, tal que para ellos no es posible cambiar el que tan talentosos o inteligentes son, por lo que no buscan retos que pongan a prueba sus capacidades y de los cuales puedan obtener un aprendizaje pues tienen miedo al fracaso. 
+
+                    Es así que cuando llegan a encontrarse con un problema que no pueden resolver o fallan en algo se dicen a ellos mismos que no es posible para ellos poder realizarlo, en vez de seguir intentándolo y comúnmente estableciendo excusas que suelen trasladar la responsabilidad del hecho hacia terceros, siempre intentando demostrar que poseen la razón cuando se equivocan en lugar de aprender de sus errores. 
+                      
+                    Así también, mediante la mentalidad fija, los individuos suelen ver el esfuerzo como algo inutil, puesto que a su parecer, no existe forma en que puedan ser mejores, rindiéndose de forma sencilla; por lo que no suelen practicar constantemente aquello en lo que desean mejorar pues al final de cuentas no permitirá que cambie su estado general de inteligencia. En este caso, se sienten poco motivados por establecer o buscar cumplir metas.
+                      
+                    En el mismo sentido, aquellos que poseen una mentalidad fija se encuentran en una búsqueda constante por parecer inteligentes y no por aumentar su verdadera inteligencia mediante la proactividad, por lo que cuando alguien les proporciona una retroalimentación sobre sus acciones o aptitudes suelen ignorarlo o sentirse ofendidos pues lo visualizan como una amenaza personal, visualizando el progreso del resto de los individuos que los rodean como una amenaza a su aparente grado de inteligencia y con una actitud de envidia hacia ellos, comparando constantemente con ellos.
+                      
+                    Es así que personas con esta mentalidad se estancan tempranamente en su zona de confort, sin alcanzar nunca su verdadero potencial puesto que no intentan superarse a sí mismas.
+                  </md-block>
+                </td>
+                <td>
+                  <md-block class="markdown">
+                    En esta mentalidad, los individuos suelen ver a su inteligencia como un elemento de sus vidas que puede ser constantemente mejorado a través del trabajo arduo y esfuerzo mediante el entrenamiento y la práctica. De esta forma las personas que poseen esta mentalidad toman sus errores y fallas como el medio a partir del cual pueden ser mejores y cultivarse en determinado ambito, considerándolos como oportunidades de crecimiento tanto personal como profesional y aceptando que el proceso de aprendizaje no es un viaje lineal, sino una serie de altas y bajas en las que las bajas representan un estado temporal que proporciona el conocimiento y las herramientas necesarias para llegar a esos momentos en los que pueden sentirse que están logrando sus metas.
+	                  
+                    En este sentido, ven a la inteligencia como algo maleable y que toma tiempo desarrollar para cumplir determinadas metas, para lo cual suelen aceptar e incluso buscar retos en los que se desafíen sus capacidades y exista la posibilidad de falla, para de esta manera conocer una nueva forma de no hacer las cosas y estar un paso más cerca de conocer el cómo se hacen. Es entonces que se encuentran en un estado constante de práctica en la cual aplican todo su esfuerzo y dedicación puesto que para ellos, este es el modo mediante el cual se puede realmente comprender y eventualmente llegar a convertirse en expertos de aquello que desean, persistiendo a pesar de las fallas.
+	                  
+                    Las personas con una mentalidad de crecimiento suelen obtener inspiración de aquellas personas que ha logrado sus metas, pues consideran que ellos proporcionan modelos en base a los cuales pueden obtener las herramientas necesarias para mejorar y crecer; tal que suelen encontrarse siempre en búsqueda de retroalimentación hacia lo que hacen y no tienen miedo a solicitar respuestas a sus dudas para lograr sus metas de tal forma que puedan utilizar las denominadas críticas constructivas como una forma de mejorar en aspectos que no habían considerado o de los que tenían una idea errónea.
+	                  
+                    Como consecuencia de lo anterior, las personas que tienen esta mentalidad suelen lograr sus objetivos y alcanzar altos niveles de realización personal y profesional, puesto que sienten que son los que dirigen su propio destino en base a la persistencia, sus acciones y el esfuerzo.
+
+                  </md-block>
+
+                </td>
+              </tr>
+            </table>
+
+          </md-block>
+        </div> 
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer">
+    <div class="container">
+      <div class="copyright">
+        Cloud Computing @ 2023</span></strong>
+      </div>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/ -->
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+      </div>
+    </div>
+  </footer><!-- End  Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="../assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="../assets/vendor/aos/aos.js"></script>
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="../assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="../assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="../assets/vendor/typed.js/typed.min.js"></script>
+  <script src="../assets/vendor/waypoints/noframework.waypoints.js"></script>
+  <script src="../assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="../assets/js/main.js"></script>
+  <script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
+    }
+    </script>
+</body>
+
+</html>
