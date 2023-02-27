@@ -379,8 +379,141 @@
               fi
             ```
 
-            BUT, this has the pitfall of not being able to manage versions, to solve it, we can use the CI/CS strategy by means of a repository and AWS CodePipeline
+            CI/CD approach
+            -----
+
+            BUT, this has the pitfall of not being able to manage versions, to solve it, we can use the CI/CS strategy by means of a Git repository and AWS CodePipeline. 
+            To do so, we first need to create a new public repository on GitHub with name REPO-NAME, after which, we can go to the root directory of the website, and do the following:
+            ```shell
+              git init   # This initializes the directory as a local repository
+              git add .  # adds all the files (including that whithin inner subdirectories) to the repository 
+              git commit -m "ALGO" # This attaches the files added to be observed into an instance of it, namely a commit (which includes changes, deletions, etc.)
+              git branch -M main # changes default branch to main (instead of legacy master)
+              git remote add origin https://github.com/Kaladin12/REPO-NAME.git # Indicates the local repository to acknowledge a remote origin in the repository we created
+              # as the new origin
+              git push origin main # tells the repository to send the commits not sent yet to the remote repository 
+            ```
+
+            After that, we will have our static website code inside the repository, then, to tell AWS to get the data from that specific repository and 
+            put it into the static website bucket, we need to the codepipeline services, which allow to create a pipeline (in this case, a series of stages that automate 
+            the different phases that code has to follow to be deployed). To do so, we can send the following:
             
+            ```shell
+              aws codepipeline create-pipeline --cli-input-json file://deployPipeline.json
+            ```
+
+            Where codepipeline is the service we're using, create-pipeline the function we want from that service, and deployPipeline makes reference to the following JSON
+            file, which describes the pipeline defintion and process
+
+            ```shell
+              {
+                "pipeline": {
+                    "name": "deployS3StaticWebsite",
+                    "roleArn": "arn:aws:iam::your-aws-account-id:role/your-codepipeline-role",
+                    "artifactStore": {
+                        "type": "S3",
+                        "location": "your-artifact-bucket"
+                    },
+                    "stages": [
+                        {
+                            "name": "Source",
+                            "actions": [
+                                {
+                                    "name": "SourceAction",
+                                    "actionTypeId": {
+                                        "category": "Source",
+                                        "owner": "ThirdParty",
+                                        "provider": "GitHub",
+                                        "version": "1"
+                                    },
+                                    "outputArtifacts": [
+                                        {
+                                            "name": "SourceOutput"
+                                        }
+                                    ],
+                                    "configuration": {
+                                        "Owner": "your-github-username",
+                                        "Repo": "your-github-repo",
+                                        "Branch": "master",
+                                        "OAuthToken": "your-github-personal-access-token"
+                                    },
+                                    "runOrder": 1
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Deploy",
+                            "actions": [
+                                {
+                                    "name": "DeployAction",
+                                    "actionTypeId": {
+                                        "category": "Deploy",
+                                        "owner": "AWS",
+                                        "provider": "S3",
+                                        "version": "1"
+                                    },
+                                    "inputArtifacts": [
+                                        {
+                                            "name": "SourceOutput"
+                                        }
+                                    ],
+                                    "configuration": {
+                                        "BucketName": "your-bucket-name"
+                                    },
+                                    "runOrder": 1
+                                }
+                            ]
+                        }
+                    ]
+                }
+              }      
+            ```
+
+            Where
+              - **Pipeline**: Makes reference to the whole set of actions that will take place
+              - **name**: Is a given name to the pipeline, in this case, it it deployS3StaticWebsite
+              - **roleArn**: Refers to the Amazon Resource Name for a role with permissions over CodePipeline
+              - **artifactStore**: Represents the information regarding the place where the artifacts (resultant files produced on each stage of the pipeline)
+              will be stored
+                - **type**: The type of storage, in this case an S3 bucket
+                - **location**: The bucket name, it has to be on the same region as the pipeline, and I found no limitatiosn for it to be the same as the website bucket, so I placed it there
+              - **stages**: A list of each step in the pipeline, each of them has:
+                - **name**: A given name to the stage
+                - **actions**: A list of actions to do
+                  - **actionTypeId**: Defines the type of action to perform and the provider of such action
+                    - **category**: The kind of action to perform, which can be one of the following: Source (references where the source code is), Build (start the build of the environment),
+                    Test, Deploy (send source code to production envirnonment), Invoke and Approval
+                    - **owner**: Who owns this category, either AWS (if it were an AWS service), ThirdParty (like GitHub) or Custom
+                    - **provider**: The name of the provider for the action
+                    - **version**: For tracking purposes
+                  - **outputArtifacts**: The name or id of the result of the action that was defined for this stage
+                  - **configuration**: The values needed to use the provider services, in this case it refers to the repository name, the branch and token
+            
+            In this case, there are two stages because the first one goes to the GitHub repository and retrieves the source code we want to deploy. The second one deploys that 
+            pulled source code into the specified bucket taking as input the results of the previous stage.
+
+            Note that for this, you have to create a GitHub Access Token, for that you can just go to Settings > Developer Settings > Personal Access Tokens > Tokens (classic) > Generate new token 
+          
+            Then, just add a name to the token, select the admin:repo_hook to have admin credentials and create it, which will provide a new token that can be placed into the
+            OAuthToken field for stage 1.
+            
+            After that, we can just create a bash script that commits the current changes to the repository, and call codepipeline to start the pipeline execution:
+            ```shell
+              #!/bin/bash  
+              # change directory to the websites root directory
+              cd ~/2/website;
+
+              git add .
+
+              git commit -m "Queiro comer tacos"
+
+              git push origin main
+
+              aws codepipeline start-pipeline-execution --name deployS3StaticWebsite --profile kaladin12
+
+            ```
+
+            <img src="../assets/img/assignments/a4_q6.PNG" width="40%" class="center"/>
           </md-block>
         </div> 
 
